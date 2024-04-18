@@ -1,0 +1,4 @@
+main
+*.exe
+config.yaml
+.DS_Store
