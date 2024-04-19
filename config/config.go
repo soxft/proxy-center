@@ -13,5 +13,4 @@ func Parse() {
 	if err != nil {
 		log.Fatalf("[config] Error reading config file, %s", err)
 	}
-
 }
