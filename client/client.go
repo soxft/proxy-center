@@ -20,6 +20,18 @@ func NewClient(serverAddr string, timeOut int, endTime int64) *Client {
 	}
 }
 
+func (c *Client) Ping() error {
+	client := resty.New().R()
+
+	var r resp
+	_, err := client.SetResult(&r).Get(fmt.Sprintf("http://%s/ping", c.ServerAddr))
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (c *Client) GetProxy() (ProxyData, error) {
 	client := resty.New().R()
 
