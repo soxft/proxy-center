@@ -33,7 +33,7 @@ func Get(ctx context.Context) (Proxy, error) {
 			_pData = Que.Remove().(Proxy)
 
 			if _pData.EndTime-time.Now().Unix() >= endTimeNeed {
-				log.Printf("[INFO] proxy get %s (%s | %d) length: %d", _pData.Addr, _pData.City, _pData.EndTime-time.Now().Unix(), Que.Length())
+				log.Printf("[INFO] proxy get %s (%s | %d | %d)", _pData.Addr, _pData.City, _pData.EndTime-time.Now().Unix(), Que.Length())
 				return _pData, nil
 			}
 		}
@@ -77,7 +77,7 @@ func MainCron() {
 			for _, _pData := range proxys {
 				ttl := _pData.EndTime - time.Now().Unix()
 
-				log.Printf("[INFO] proxy add %s (%s | %s | %d)", _pData.Addr, _pData.City, time.Unix(_pData.EndTime, 0).Format("2006-01-02 15:04:05"), ttl)
+				log.Printf("[INFO] proxy add %s (%s | %d | %d)", _pData.Addr, _pData.City, ttl, Que.Length())
 
 				Que.Add(_pData)
 
@@ -101,7 +101,7 @@ func MainCron() {
 			duration = viper.GetInt64("Frequency")
 		}
 
-		log.Printf("[INFO] 将在 %d 秒后 再次获取 proxy 列表", duration)
+		log.Printf("[INFO] get proxys success, sleep %d seconds", duration)
 		time.Sleep(time.Second * time.Duration(duration))
 	}
 }
