@@ -112,8 +112,12 @@ func getProxy() ([]Proxy, error) {
 		return getProxyDm()
 	case 2:
 		return getProxyDy()
-	default:
+	case 3:
 		return getProxyXq()
+	case 4:
+		return getProxyQg()
+	default:
+		return getProxyQg()
 	}
 }
 
@@ -220,6 +224,44 @@ func getProxyXq() ([]Proxy, error) {
 			Addr:    fmt.Sprintf("%s:%d", pD.Ip, pD.Port),
 			EndTime: time.Now().Unix() + 28, // 安全起见 减少 10 秒
 			City:    pD.IpAddress,
+		})
+	}
+
+	return _proxy, nil
+}
+
+func getProxyQg() ([]Proxy, error) {
+	client := resty.New().SetTimeout(time.Second * 2)
+
+	var result qgResp
+	if _, err := client.
+		R().SetResult(&result).
+		ForceContentType("application/json").
+		Get(viper.GetString("Api.QgApi")); err != nil {
+
+		log.Printf("[Warning] Get Proxy Api Request Failed, Retry in 500 milliseconds | Err: %s", err.Error())
+
+		time.Sleep(time.Millisecond * 500)
+
+		return getProxy()
+	}
+	if result.Code != "SUCCESS" {
+		return []Proxy{}, errors.New(fmt.Sprintf("Code: %s", result.Code))
+	}
+
+	var _proxy []Proxy
+
+	for _, pD := range result.Data {
+		r, err := timeParse(pD.Deadline)
+		if err != nil {
+			log.Printf("[Warning] error time format %s", pD.Deadline)
+			continue
+		}
+		_proxy = append(_proxy, Proxy{
+			Addr:    pD.Server,
+			EndTime: r.Unix() - 2, // 安全起见 减少 2 秒
+			City:    pD.Area,
+			Isp:     pD.Isp,
 		})
 	}
 

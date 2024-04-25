@@ -38,9 +38,20 @@ type XqResp struct {
 	} `json:"data"`
 }
 
-// used to t
+type qgResp struct {
+	Code string `json:"code"`
+	Data []struct {
+		ProxyIp  string `json:"proxy_ip"`
+		Server   string `json:"server"`
+		Area     string `json:"area"`
+		Isp      string `json:"isp"`
+		Deadline string `json:"deadline"`
+	}
+}
+
 type Proxy struct {
 	Addr    string
 	EndTime int64
 	City    string
+	Isp     string
 }
